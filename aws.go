@@ -18,6 +18,7 @@ type (
 		Key      string
 		Secret   string
 		Endpoint string
+		Domain   string
 		Region   string
 		Bucket   string
 		client   *s3.S3
@@ -27,6 +28,7 @@ type (
 		Folder        string
 		Prefix        string
 		Cache         bool
+		CacheTime     int
 		File          *os.File
 		FileMultipart *multipart.FileHeader
 	}
@@ -74,7 +76,7 @@ func (s *AwsConfig) Upload(req AwsUploadReq) (*AwsUploadResp, error) {
 	path += "/" + filename
 	expired := ""
 	if req.Cache {
-		expired = fmt.Sprintf("max-age=%s", os.Getenv("AWS_CACHE_SECOND"))
+		expired = fmt.Sprintf("max-age=%s", req.CacheTime)
 	}
 
 	_, err := s.client.PutObject(&s3.PutObjectInput{
@@ -90,7 +92,7 @@ func (s *AwsConfig) Upload(req AwsUploadReq) (*AwsUploadResp, error) {
 		return nil, err
 	}
 
-	return &AwsUploadResp{Url: os.Getenv("AWS_DOMAIN") + "/" + path}, nil
+	return &AwsUploadResp{Url: s.Domain + "/" + path}, nil
 }
 
 func (s *AwsConfig) UploadMultipart(req AwsUploadReq) (*AwsUploadResp, error) {
@@ -112,7 +114,7 @@ func (s *AwsConfig) UploadMultipart(req AwsUploadReq) (*AwsUploadResp, error) {
 	path += "/" + filename
 	expired := ""
 	if req.Cache {
-		expired = "max-age=" + os.Getenv("AWS_CACHE_SECOND")
+		expired = fmt.Sprintf("max-age=%s", req.CacheTime)
 	}
 
 	_, err = s.client.PutObject(&s3.PutObjectInput{
@@ -128,7 +130,7 @@ func (s *AwsConfig) UploadMultipart(req AwsUploadReq) (*AwsUploadResp, error) {
 		return nil, err
 	}
 
-	return &AwsUploadResp{Url: os.Getenv("AWS_DOMAIN") + "/" + path}, nil
+	return &AwsUploadResp{Url: s.Domain + "/" + path}, nil
 }
 
 func (s *AwsConfig) Delete(req AwsDeletedReq) error {
