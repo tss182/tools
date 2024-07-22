@@ -39,7 +39,7 @@ type (
 	}
 )
 
-func initAws(cfg AwsConfig) (*AwsConfig, error) {
+func InitAws(cfg AwsConfig) (*AwsConfig, error) {
 	s3Config := &aws.Config{
 		Credentials: credentials.NewStaticCredentials(cfg.Key, cfg.Secret, ""),
 		Endpoint:    aws.String(cfg.Endpoint),
