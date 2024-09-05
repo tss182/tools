@@ -136,13 +136,18 @@ func PrivacyContact(str string) string {
 	return result
 }
 
-func StructToJson(data interface{}) string {
-	b, _ := json.MarshalIndent(data, "", "    ")
+func StructToJson(data interface{}, prettier bool) string {
+	var b []byte
+	if prettier {
+		b, _ = json.MarshalIndent(data, "", "    ")
+	} else {
+		b, _ = json.Marshal(data)
+	}
 	return string(b)
 }
 
 func StructToMap(data interface{}) map[string]interface{} {
-	r := StructToJson(data)
+	r := StructToJson(data, false)
 	var result map[string]interface{}
 	_ = json.Unmarshal([]byte(r), &result)
 	return result
@@ -154,18 +159,28 @@ func StringToInt(data string) int {
 }
 
 func AddressSplit(str string, split int) (string, string, string) {
-	shipperAddress := SplitN(str, split)
+	var receiverAddress [3][]string
+	var indexAddress = 0
+	var lenAddress = 0
+	for _, v := range strings.Split(str, " ") {
+		lenAddress += len(v)
+		if lenAddress >= split {
+			indexAddress++
+			lenAddress = 0
+		}
+		receiverAddress[indexAddress] = append(receiverAddress[indexAddress], v)
+	}
 	var address1, address2, address3 string
-	for i, v := range shipperAddress {
-		switch i {
-		case 0:
-			address1 = v
-		case 1:
-			address2 = v
-		case 2:
-			address3 = v
-		default:
-			break
+	for i, v := range receiverAddress {
+		if len(v) > 0 {
+			switch i {
+			case 0:
+				address1 = strings.TrimSpace(strings.Join(v, " "))
+			case 1:
+				address2 = strings.TrimSpace(strings.Join(v, " "))
+			case 2:
+				address3 = strings.TrimSpace(strings.Join(v, " "))
+			}
 		}
 	}
 	return address1, address2, address3
