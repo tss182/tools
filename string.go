@@ -137,7 +137,7 @@ func PrivacyContact(str string) string {
 }
 
 func StructToJson(data interface{}) string {
-	b, _ := json.Marshal(data)
+	b, _ := json.MarshalIndent(data, "", "    ")
 	return string(b)
 }
 
