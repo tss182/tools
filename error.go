@@ -27,7 +27,7 @@ func HandlerBindingErrorFiber(c *fiber.Ctx, obj any, shouldType string) error {
 	var err error
 	switch shouldType {
 	case ShouldTypeQuery:
-		err = c.BodyParser(obj)
+		err = c.QueryParser(obj)
 	case ShouldTypeJson:
 		err = c.BodyParser(obj)
 	case ShouldTypeForm:
