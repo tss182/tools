@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v2"
 	"strconv"
 	"strings"
 )
@@ -18,6 +19,19 @@ func HandlerBindingError(c *gin.Context, obj any, shouldType string) error {
 		err = c.ShouldBindJSON(obj)
 	case ShouldTypeForm:
 		err = c.ShouldBind(obj)
+	}
+	return ErrorHandle(err)
+}
+
+func HandlerBindingErrorFiber(c *fiber.Ctx, obj any, shouldType string) error {
+	var err error
+	switch shouldType {
+	case ShouldTypeQuery:
+		err = c.BodyParser(obj)
+	case ShouldTypeJson:
+		err = c.BodyParser(obj)
+	case ShouldTypeForm:
+		err = c.BodyParser(obj)
 	}
 	return ErrorHandle(err)
 }
